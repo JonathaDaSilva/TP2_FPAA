@@ -55,14 +55,18 @@ public class Tango {
         System.out.println("\n=== Tabuleiro inicial ===");
         imprimir(tabuleiro);
 
-        long tempoInicial = System.currentTimeMillis();
-        boolean resolvido = solver.backtracking(tabuleiro);
-        long tempoFinal = System.currentTimeMillis();
+        long tempoInicial = System.nanoTime();
+        //boolean resolvido = solver.backtracking(tabuleiro);
+        boolean resolvido = solver.forcaBruta(tabuleiro);
+        long tempoFinal = System.nanoTime();
+
+        long duracaoNs = tempoFinal - tempoInicial;
+        double duracaoMs = duracaoNs / 1_000_000.0;
 
         System.out.println("\n=== Resultado ===");
         if (resolvido) {
             imprimir(tabuleiro);
-            System.out.println("\nResolvido em: " + (tempoFinal - tempoInicial) + " ms");
+            System.out.printf("%nResolvido em: %.3f ms (%d ns)%n", duracaoMs, duracaoNs);
         } else {
             System.out.println("Nenhuma solução encontrada.");
         }
