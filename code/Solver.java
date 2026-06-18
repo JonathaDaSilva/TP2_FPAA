@@ -5,7 +5,6 @@ public class Solver {
 
     private final Validador validador;
 
-    // Reusa a convenção única definida em Tango (VAZIO = -1, LUA = 0, SOL = 1).
     private static final int VAZIO = Tango.VAZIO;
     private static final int SOL   = Tango.SOL;
     private static final int LUA   = Tango.LUA;
@@ -36,7 +35,8 @@ public class Solver {
 
     /**
      * Método auxiliar recursivo que testa as combinações de SOL e LUA.
-     * * @param t             O tabuleiro atual.
+     *
+     * @param t             O tabuleiro atual.
      * @param celulasVazias A lista de coordenadas das células que precisam ser preenchidas.
      * @param indiceAtual   Qual célula vazia da lista estamos preenchendo agora.
      * @return true se encontrou uma configuração válida, false caso contrário.
@@ -90,10 +90,11 @@ public class Solver {
         int n = t.length;
         int totalCelulas = n * n;
 
-        // 1. Caso base: passou da última célula (índice igual ao total de células)
-        // Como só avançamos se a jogada for válida, se chegamos aqui, o tabuleiro está correto!
+        // 1. Caso base: passou da última célula (índice igual ao total de células).
+        // Validação completa uma única vez: garante a corretude do tabuleiro cheio
+        // (inclusive contra dicas iniciais inconsistentes, que a poda local não cobre).
         if (indiceLinear == totalCelulas) {
-            return true;
+            return validador.tabuleiroCompletoValido(t);
         }
 
         // Conversão do índice linear para coordenadas da matriz (Linha e Coluna)
@@ -111,7 +112,7 @@ public class Solver {
         if (validador.jogadaValida(t, linha, coluna, SOL)) {
             t[linha][coluna] = SOL; // Atribui
 
-            if (backtrackingRecursivo(t, indiceLinear + 1)) { // Avança na recursão
+            if (backtrackingRecursivo(t, indiceLinear + 1)) {
                 return true;
             }
 

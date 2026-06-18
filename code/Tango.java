@@ -1,64 +1,73 @@
-/**
- * Tango.java
- * Ponto de entrada do programa.
- *
- * Responsabilidades (parte "neutra", não-algorítmica):
- *   - montar os tabuleiros de exemplo;
- *   - imprimir o estado inicial;
- *   - chamar o solver escolhido;
- *   - imprimir o resultado final.
- *
- * A lógica de resolução fica em Solver.java; as regras, em Validador.java.
- */
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Tango {
 
-    // Convenção de valores das células:
     public static final int VAZIO = -1;
     public static final int LUA   = 0;
     public static final int SOL   = 1;
 
     public static void main(String[] args) {
-        int[][] tabuleiro = {
-            { VAZIO, VAZIO,   SOL, VAZIO, VAZIO, VAZIO },
-            { VAZIO, VAZIO, VAZIO, VAZIO,   LUA, VAZIO },
-            { VAZIO,   SOL, VAZIO, VAZIO, VAZIO, VAZIO },
-            { VAZIO, VAZIO, VAZIO, VAZIO, VAZIO, VAZIO },
-            { VAZIO,   LUA, VAZIO, VAZIO, VAZIO,   SOL },
-            { VAZIO, VAZIO, VAZIO, VAZIO, VAZIO, VAZIO },
-        };
+        Scanner scanner = new Scanner(System.in);
 
-        // ----- Restrições entre células adjacentes -----
-        // Cada restrição liga duas células vizinhas. Formato sugerido:
-        //   {linhaA, colA, linhaB, colB}
-        // Mantidas em duas listas: uma para "=" (igual) e outra para "x" (oposto).
+        // 1. Leitura do tamanho do tabuleiro
+        System.out.print("Digite o tamanho do tabuleiro (N): ");
+        int n = scanner.nextInt();
+
+        // 2. Leitura da matriz do tabuleiro
+        int[][] tabuleiro = new int[n][n];
+        System.out.println("Digite as linhas da matriz (use -1 para Vazio, 0 para Lua, 1 para Sol):");
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                tabuleiro[i][j] = scanner.nextInt();
+            }
+        }
+
+        // 3. Leitura das restrições de IGUALDADE (=)
         List<int[]> igualdades = new ArrayList<>();
-        List<int[]> oposicoes  = new ArrayList<>();
-        // Exemplos (ajuste conforme o tabuleiro):
-        // igualdades.add(new int[]{0, 0, 0, 1});   // (0,0) = (0,1)
-        // oposicoes.add (new int[]{1, 2, 2, 2});    // (1,2) x (2,2)
+        System.out.print("Digite a quantidade de restrições de IGUALDADE (=): ");
+        int qtdIgualdades = scanner.nextInt();
+        if (qtdIgualdades > 0) {
+            System.out.println("Digite as igualdades no formato 'linhaA colA linhaB colB':");
+            for (int i = 0; i < qtdIgualdades; i++) {
+                igualdades.add(new int[]{ scanner.nextInt(), scanner.nextInt(), scanner.nextInt(), scanner.nextInt() });
+            }
+        }
 
+        // 4. Leitura das restrições de OPOSIÇÃO (x)
+        List<int[]> oposicoes = new ArrayList<>();
+        System.out.print("Digite a quantidade de restrições de OPOSIÇÃO (x): ");
+        int qtdOposicoes = scanner.nextInt();
+        if (qtdOposicoes > 0) {
+            System.out.println("Digite as oposições no formato 'linhaA colA linhaB colB':");
+            for (int i = 0; i < qtdOposicoes; i++) {
+                oposicoes.add(new int[]{ scanner.nextInt(), scanner.nextInt(), scanner.nextInt(), scanner.nextInt() });
+            }
+        }
+
+        scanner.close();
+
+        // ----- Processamento e Execução -----
         Validador validador = new Validador(igualdades, oposicoes);
         Solver solver = new Solver(validador);
 
-        System.out.println("=== Tabuleiro inicial ===");
+        System.out.println("\n=== Tabuleiro inicial ===");
         imprimir(tabuleiro);
 
-        // Escolha do algoritmo: troque para forcaBruta para comparar.
+        long tempoInicial = System.currentTimeMillis();
         boolean resolvido = solver.backtracking(tabuleiro);
-        // boolean resolvido = solver.forcaBruta(tabuleiro);
+        long tempoFinal = System.currentTimeMillis();
 
         System.out.println("\n=== Resultado ===");
         if (resolvido) {
             imprimir(tabuleiro);
+            System.out.println("\nResolvido em: " + (tempoFinal - tempoInicial) + " ms");
         } else {
             System.out.println("Nenhuma solução encontrada.");
         }
     }
 
-    /** Impressão ASCII do tabuleiro (Sol = S, Lua = L, vazio = .). */
     public static void imprimir(int[][] t) {
         for (int[] linha : t) {
             StringBuilder sb = new StringBuilder();
