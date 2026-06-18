@@ -5,8 +5,8 @@ import java.util.Scanner;
 public class Tango {
 
     public static final int VAZIO = -1;
-    public static final int LUA   = 0;
-    public static final int SOL   = 1;
+    public static final int LUA = 0;
+    public static final int SOL = 1;
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -31,7 +31,7 @@ public class Tango {
         if (qtdIgualdades > 0) {
             System.out.println("Digite as igualdades no formato 'linhaA colA linhaB colB':");
             for (int i = 0; i < qtdIgualdades; i++) {
-                igualdades.add(new int[]{ scanner.nextInt(), scanner.nextInt(), scanner.nextInt(), scanner.nextInt() });
+                igualdades.add(new int[]{scanner.nextInt(), scanner.nextInt(), scanner.nextInt(), scanner.nextInt()});
             }
         }
 
@@ -42,22 +42,33 @@ public class Tango {
         if (qtdOposicoes > 0) {
             System.out.println("Digite as oposições no formato 'linhaA colA linhaB colB':");
             for (int i = 0; i < qtdOposicoes; i++) {
-                oposicoes.add(new int[]{ scanner.nextInt(), scanner.nextInt(), scanner.nextInt(), scanner.nextInt() });
+                oposicoes.add(new int[]{scanner.nextInt(), scanner.nextInt(), scanner.nextInt(), scanner.nextInt()});
             }
         }
-
-        scanner.close();
 
         // ----- Processamento e Execução -----
         Validador validador = new Validador(igualdades, oposicoes);
         Solver solver = new Solver(validador);
 
+        System.out.println("Deseja que seja resolvido por qual método?");
+        System.out.println("[1] Backtracking");
+        System.out.println("[2] Força Bruta");
+        int opcao = scanner.nextInt();
+
+        scanner.close();
+
         System.out.println("\n=== Tabuleiro inicial ===");
         imprimir(tabuleiro);
 
         long tempoInicial = System.nanoTime();
-        //boolean resolvido = solver.backtracking(tabuleiro);
-        boolean resolvido = solver.forcaBruta(tabuleiro);
+        boolean resolvido = false;
+        if (opcao == 1) {
+            resolvido = solver.backtracking(tabuleiro);
+        } else if (opcao == 2) {
+            resolvido = solver.forcaBruta(tabuleiro);
+        } else {
+            System.out.println("Opção inválida.");
+        }
         long tempoFinal = System.nanoTime();
 
         long duracaoNs = tempoFinal - tempoInicial;
