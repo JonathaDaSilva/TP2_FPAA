@@ -77,22 +77,60 @@ public class Solver {
 
     /**
      * BACKTRACKING (busca com poda).
-     * Ideia: preencher célula a célula; antes de descer na recursão, usar
-     * validador.jogadaValida(...) para descartar ramos inválidos imediatamente.
-     *
-     * Roteiro sugerido:
-     *   - Caso base: passou da última célula => tabuleiro completo e válido => true.
-     *   - Se a célula atual já tem dica, avançar para a próxima.
-     *   - Senão, tentar SOL e LUA: para cada valor que passe em jogadaValida(...),
-     *     atribuir, recursão para a próxima célula; se falhar, desfazer (backtrack).
-     *
-     * Dica: percorrer as células por índice linear de 0 a n*n-1, convertendo com
-     *       linha = i / n  e  coluna = i % n. Um método auxiliar recursivo ajuda.
-     *
-     * @return true se encontrou solução (deixando-a em 't').
      */
     public boolean backtracking(int[][] t) {
-        // TODO: implementar a recursão com poda (pode chamar um auxiliar privado).
-        throw new UnsupportedOperationException("Implementar backtracking");
+        // Inicia a recursão a partir do índice linear 0
+        return backtrackingRecursivo(t, 0);
+    }
+
+    /**
+     * Método auxiliar recursivo usando índice linear.
+     */
+    private boolean backtrackingRecursivo(int[][] t, int indiceLinear) {
+        int n = t.length;
+        int totalCelulas = n * n;
+
+        // 1. Caso base: passou da última célula (índice igual ao total de células)
+        // Como só avançamos se a jogada for válida, se chegamos aqui, o tabuleiro está correto!
+        if (indiceLinear == totalCelulas) {
+            return true;
+        }
+
+        // Conversão do índice linear para coordenadas da matriz (Linha e Coluna)
+        int linha = indiceLinear / n;
+        int coluna = indiceLinear % n;
+
+        // 2. Se a célula atual já tem dica (não está vazia), avançamos para a próxima
+        if (t[linha][coluna] != VAZIO) {
+            return backtrackingRecursivo(t, indiceLinear + 1);
+        }
+
+        // 3. Senão, tentar SOL e LUA:
+
+        // --- Tentativa com SOL ---
+        if (validador.jogadaValida(t, linha, coluna, SOL)) {
+            t[linha][coluna] = SOL; // Atribui
+
+            if (backtrackingRecursivo(t, indiceLinear + 1)) { // Avança na recursão
+                return true;
+            }
+
+            t[linha][coluna] = VAZIO;
+        }
+
+        // --- Tentativa com LUA ---
+        if (validador.jogadaValida(t, linha, coluna, LUA)) {
+            t[linha][coluna] = LUA;
+
+            if (backtrackingRecursivo(t, indiceLinear + 1)) {
+                return true;
+            }
+
+            t[linha][coluna] = VAZIO;
+        }
+
+        // Se nem SOL nem LUA foram válidos ou se ambos falharam nos passos seguintes,
+        // retornamos false para forçar o nível anterior a mudar sua escolha.
+        return false;
     }
 }
