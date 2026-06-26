@@ -136,9 +136,10 @@ O programa pergunta interativamente:
 
 Ao final, imprime o tabuleiro inicial, a solução e o tempo de resolução em ms.
 
-> Por padrão, o `main` chama `solver.backtracking(...)`. Para demonstrar a Força Bruta,
-> troque a chamada por `solver.forcaBruta(...)` e use uma entrada com **poucas células
-> vazias** (veja a observação de complexidade na seção 8).
+> Ao final da leitura, o programa exibe um menu para escolher o método de resolução:
+> `[1] Backtracking` ou `[2] Força Bruta`. Para demonstrar a Força Bruta, escolha `2`
+> e use uma entrada com **poucas células vazias** (veja a observação de complexidade na
+> seção 8).
 
 ### Exemplo de entrada (6×6)
 
@@ -203,9 +204,9 @@ Medições feitas com a lógica do projeto (grade 6×6) ilustram o contraste:
 | Força Bruta — 12 vazias         | ~3 ms            |
 | Força Bruta — grade cheia (32 vazias) | inviável (2³²) |
 
-Sugestão para o relatório: meça alguns pontos com `System.currentTimeMillis()` (já
-presente no `main`) e monte uma tabela própria, comparando os dois algoritmos para
-o mesmo tabuleiro.
+Sugestão para o relatório: meça alguns pontos com `System.nanoTime()` (já presente no
+`main`, com saída em ms e ns) e monte uma tabela própria, comparando os dois algoritmos
+para o mesmo tabuleiro.
 
 ---
 
