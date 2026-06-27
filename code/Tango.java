@@ -119,7 +119,7 @@ public class Tango {
         return scanner.nextInt();
     }
 
-    /** Verdadeiro se as duas células {lA,cA,lB,cB} estão dentro do tabuleiro n x n. */
+    /** Verdadeiro se as duas células {lA, cA, lB, cB} estão dentro do tabuleiro n x n. */
     private static boolean coordsValidas(int[] r, int n) {
         for (int v : r) {
             if (v < 0 || v >= n) return false;
