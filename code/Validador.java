@@ -2,21 +2,14 @@ import java.util.List;
 
 /**
  * Guarda as cinco regras do Tango e responde se um tabuleiro (ou uma jogada)
- * as respeita. Esta classe não conhece os algoritmos de resolução: ela apenas
- * julga estados, e é consultada tanto pela Força Bruta quanto pelo Backtracking.
- * Há dois tipos de verificação:
- *  - a completa, usada quando o tabuleiro já está totalmente preenchido;
- *  - a por jogada, mais barata, que olha só o efeito de uma única peça e serve
- *    de poda para o Backtracking.
+ * as respeita. Esta classe, utilizada por injeção nos algoritmos de resolução,
+ * julga estados do tabuleiro e verifica comprimento de regras.
  */
 public class Validador {
 
-    // As restrições lidas da entrada, separadas por tipo.
-    // Cada restrição é um vetor {linhaA, colA, linhaB, colB} ligando duas células.
-    private final List<int[]> igualdades; // células que devem ter o mesmo símbolo
-    private final List<int[]> oposicoes;  // células que devem ter símbolos diferentes
+    private final List<int[]> igualdades;
+    private final List<int[]> oposicoes;
 
-    // Apelidos para os três valores possíveis de uma célula, vindos da classe Tango.
     private static final int VAZIO = Tango.VAZIO;
     private static final int SOL = Tango.SOL;
     private static final int LUA = Tango.LUA;

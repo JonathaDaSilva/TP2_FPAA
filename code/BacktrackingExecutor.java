@@ -7,10 +7,8 @@
  */
 public class BacktrackingExecutor implements Executor {
 
-    // Guarda as regras do jogo; é quem decide se uma jogada é permitida.
     private final Validador validador;
 
-    // Apelidos para os três valores possíveis de uma célula, vindos da classe Tango.
     private static final int VAZIO = Tango.VAZIO;
     private static final int SOL = Tango.SOL;
     private static final int LUA = Tango.LUA;
@@ -37,7 +35,7 @@ public class BacktrackingExecutor implements Executor {
     private boolean backtrackingRecursivo(int[][] t, int i) {
         int n = t.length;
 
-        // Condição de parada: já passamos por todas as células.
+        // Condição de parada: todas as células visitadas.
         // Aqui o tabuleiro está cheio, então fazemos a conferência final completa.
         // Essa conferência também protege contra dicas iniciais já inválidas, que a
         // verificação por jogada não percorre.
@@ -46,14 +44,14 @@ public class BacktrackingExecutor implements Executor {
         int l = i / n;
         int c = i % n;
 
-        // Se a célula já veio preenchida como dica, não há o que decidir, segue.
+        // Se a célula já veio preenchida como dica, não há o que alterar, segue a exeução em nova chamada.
         if (t[l][c] != VAZIO) return backtrackingRecursivo(t, i + 1);
 
         // Tenta colocar um Sol, mas só se essa jogada não quebrar nenhuma regra.
         if (validador.jogadaValida(t, l, c, SOL)) {
             t[l][c] = SOL;
             if (backtrackingRecursivo(t, i + 1)) return true;
-            t[l][c] = VAZIO; // não deu certo: desfaz e tenta a outra opção.
+            t[l][c] = VAZIO; // desfaz caso dê errado.
         }
 
         // Tenta colocar uma Lua, sob a mesma condição.
@@ -63,7 +61,7 @@ public class BacktrackingExecutor implements Executor {
             t[l][c] = VAZIO; // desfaz.
         }
 
-        // Nem Sol, nem Lua funcionaram aqui: avisa quem chamou para mudar a escolha anterior.
+        // Nenhuma combinação funcionou: avisa quem chamou para mudar a escolha anterior.
         return false;
     }
 }

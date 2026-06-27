@@ -9,10 +9,8 @@ import java.util.List;
  */
 public class ForcaBrutaExecutor implements Executor {
 
-    // Guarda as regras do jogo; usado apenas na conferência final.
     private final Validador validador;
 
-    // Apelidos para os três valores possíveis de uma célula, vindos da classe Tango.
     private static final int VAZIO = Tango.VAZIO;
     private static final int SOL = Tango.SOL;
     private static final int LUA = Tango.LUA;
@@ -45,7 +43,7 @@ public class ForcaBrutaExecutor implements Executor {
      */
     private boolean forcaBrutaRecursivo(int[][] t, List<int[]> vazias, int i) {
         // Condição de parada: todas as células vazias já receberam um valor.
-        // Só agora, com o tabuleiro cheio, conferimos se as regras foram respeitadas.
+        // Só com o tabuleiro cheio conferimos se a resolução é válida.
         if (i == vazias.size()) return validador.tabuleiroCompletoValido(t);
 
         int l = vazias.get(i)[0];
@@ -55,11 +53,11 @@ public class ForcaBrutaExecutor implements Executor {
         t[l][c] = SOL;
         if (forcaBrutaRecursivo(t, vazias, i + 1)) return true;
 
-        // Se não deu, tenta a mesma célula como Lua.
+        // Se não deu (houve retorno da chamada anterior), tenta a mesma célula como Lua.
         t[l][c] = LUA;
         if (forcaBrutaRecursivo(t, vazias, i + 1)) return true;
 
-        // Nenhuma das duas opções levou a uma solução: limpa a célula e volta.
+        // Nenhuma das duas opções levou a uma solução: limpa a célula e volta para o chamador.
         t[l][c] = VAZIO;
         return false;
     }

@@ -1,9 +1,7 @@
 /**
- * Define uma estratégia de resolução do tabuleiro.
- * O projeto oferece duas estratégias: Força Bruta e Backtracking. A classe Tango
- * trabalha apenas com este contrato, sem precisar conhecer qual técnica está
- * a resolver o tabuleiro. Cada estratégia recebe um Validador (responsável pelas
- * regras e podas) e preenche o próprio tabuleiro recebido.
+ * Define o contrato de resolução do tabuleiro. A classe Tango
+ * trabalha apenas com este contrato, não precisando conhecer regras específicas do
+ * tipo de algoritmo que realizará a resolução.
  */
 public interface Executor {
 
