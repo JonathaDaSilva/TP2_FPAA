@@ -71,7 +71,6 @@ public class Tango {
 
         // ----- Processamento e Execução -----
         Validador validador = new Validador(igualdades, oposicoes);
-        Solver solver = new Solver(validador);
 
         System.out.println("Deseja que seja resolvido por qual método?");
         System.out.println("[1] Backtracking");
@@ -80,19 +79,22 @@ public class Tango {
 
         scanner.close();
 
+        Executor executor;
+        if (opcao == 1) {
+            executor = new BacktrackingExecutor(validador);
+        } else if (opcao == 2) {
+            executor = new ForcaBrutaExecutor(validador);
+        } else {
+            System.out.println("Opção inválida.");
+            return;
+        }
+
         System.out.println("\n=== Tabuleiro inicial ===");
         imprimir(tabuleiro);
         imprimirRestricoes(igualdades, oposicoes);
 
         long tempoInicial = System.nanoTime();
-        boolean resolvido = false;
-        if (opcao == 1) {
-            resolvido = solver.backtracking(tabuleiro);
-        } else if (opcao == 2) {
-            resolvido = solver.forcaBruta(tabuleiro);
-        } else {
-            System.out.println("Opção inválida.");
-        }
+        boolean resolvido = executor.executar(tabuleiro);
         long tempoFinal = System.nanoTime();
 
         long duracaoNs = tempoFinal - tempoInicial;
