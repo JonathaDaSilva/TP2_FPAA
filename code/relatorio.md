@@ -29,14 +29,19 @@ As cinco regras do Tango:
 
 ```
 code/
-├── Tango.java       # Ponto de entrada: leitura via console, impressão, medição de tempo
-├── Validador.java   # As 5 regras (validação global e validação local/poda)
-└── Solver.java      # Algoritmos: forcaBruta() e backtracking()
+├── Tango.java                # Ponto de entrada: leitura via console, impressão, medição de tempo
+├── Validador.java            # As 5 regras (validação global e validação local/poda)
+├── Executor.java             # Contrato comum das estratégias de resolução
+├── BacktrackingExecutor.java # Estratégia de Backtracking (busca com poda)
+└── ForcaBrutaExecutor.java   # Estratégia de Força Bruta (busca exaustiva)
 ```
 
 A arquitetura separa deliberadamente a **validação das regras** (`Validador`) da
-**mecânica de recursão** (`Solver`), conforme exige o enunciado. Os dois algoritmos
-reutilizam a mesma validação; a diferença está em *quando* ela é chamada.
+**mecânica de recursão** (os executores), conforme exige o enunciado. A interface
+`Executor` define o contrato comum (`executar(int[][])`), e `Tango` escolhe a
+implementação conforme o método pedido pelo usuário, sem conhecer os detalhes de cada
+algoritmo. Os dois executores reutilizam o mesmo `Validador`; a diferença está em
+*quando* a validação é chamada.
 
 ---
 
@@ -45,9 +50,9 @@ reutilizam a mesma validação; a diferença está em *quando* ela é chamada.
 - **Tabuleiro:** matriz `int[][]`.
 - **Convenção de valores** (definida em `Tango` e reutilizada pelos demais):
   `VAZIO = -1`, `LUA = 0`, `SOL = 1`.
-- **Restrições:** cada restrição liga duas células adjacentes e é representada por
-  um vetor `{linhaA, colA, linhaB, colB}`. Ficam em duas listas separadas:
-  `List<int[]> igualdades` (para `=`) e `List<int[]> oposicoes` (para `×`).
+- **Restrições:** cada restrição liga duas células (no jogo, sempre vizinhas) e é
+  representada por um vetor `{linhaA, colA, linhaB, colB}`. Ficam em duas listas
+  separadas: `List<int[]> igualdades` (para `=`) e `List<int[]> oposicoes` (para `×`).
 
 A escolha de `int[][]` dá acesso O(1) a cada célula e mantém o código simples. Separar
 as restrições em duas listas evita um campo extra de "tipo" e deixa a iteração de cada
@@ -88,9 +93,12 @@ cheio, garante o equilíbrio exato — sem precisar reavaliar a grade inteira a 
 
 ---
 
-## 5. Estratégias de resolução — `Solver.java`
+## 5. Estratégias de resolução — `Executor` e implementações
 
-### 5.1. Força Bruta — `forcaBruta(int[][] t)`
+Ambas as estratégias implementam a interface `Executor` (método `executar(int[][])`)
+e recebem o `Validador` no construtor.
+
+### 5.1. Força Bruta — `ForcaBrutaExecutor`
 
 1. Coleta todas as posições vazias numa lista.
 2. Por recursão (`forcaBrutaRecursivo`), atribui SOL e depois LUA a cada vazia,
@@ -102,7 +110,7 @@ cheio, garante o equilíbrio exato — sem precisar reavaliar a grade inteira a 
 Essa ausência de poda durante a construção é exatamente o que caracteriza a busca
 exaustiva pura.
 
-### 5.2. Backtracking — `backtracking(int[][] t)`
+### 5.2. Backtracking — `BacktrackingExecutor`
 
 - Percorre as células por **índice linear** `0 .. n²-1`, convertendo com
   `linha = i / n` e `coluna = i % n`.
@@ -134,7 +142,12 @@ O programa pergunta interativamente:
    formato `linhaA colA linhaB colB`.
 4. **Quantidade de restrições de oposição (`×`)** e, em seguida, cada uma no mesmo formato.
 
-Ao final, imprime o tabuleiro inicial, a solução e o tempo de resolução em ms.
+Ao final, imprime o tabuleiro inicial (seguido da lista de restrições `=` / `×`),
+a solução e o tempo de resolução em milissegundos e nanossegundos.
+
+A entrada é validada à medida que é lida; o programa exibe uma mensagem de erro e
+encerra caso encontre: `N` não positivo ou ímpar, valor de célula fora de `-1`/`0`/`1`,
+coordenada de restrição fora do tabuleiro, ou um campo que não seja um número inteiro.
 
 > Ao final da leitura, o programa exibe um menu para escolher o método de resolução:
 > `[1] Backtracking` ou `[2] Força Bruta`. Para demonstrar a Força Bruta, escolha `2`
@@ -173,6 +186,7 @@ Saída do Backtracking para a entrada acima (símbolos `S` = Sol, `L` = Lua):
 . . . . . .
 . L . . . S
 . . . . . .
+Restrições: (0,0)=(0,1) | (2,0)x(2,1) |
 
 === Resultado ===
 L L S S L S
@@ -181,6 +195,8 @@ L S S L S L
 S L L S L S
 L L S L S S
 S S L L S L
+
+Resolvido em: 0,080 ms (80300 ns)
 ```
 
 A solução respeita as cinco regras: nenhum trio idêntico, 3 Sóis e 3 Luas por linha
@@ -231,7 +247,8 @@ para o mesmo tabuleiro.
 ## 10. Resumo para o grupo
 
 O núcleo está implementado e validado: modelagem em `int[][]`, as 5 regras isoladas
-no `Validador` (com versões global e local), e os dois algoritmos no `Solver`. A
+no `Validador` (com versões global e local), e os dois algoritmos nas estratégias
+`ForcaBrutaExecutor` e `BacktrackingExecutor`, escolhidas pela interface `Executor`. A
 entrada é interativa via console. Falta principalmente: capturar telas de execução
 para o relatório, montar a tabela de tempos da análise de complexidade e revisar o
 texto das seções da documentação final.
