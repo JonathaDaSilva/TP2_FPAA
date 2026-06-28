@@ -127,22 +127,28 @@ public class Tango {
         return true;
     }
 
-    /** Lista as restrições = e x lidas, junto ao tabuleiro inicial. */
+    /** Lista as restrições lidas, com as de igualdade (=) e de oposição (x) em linhas separadas. */
     public static void imprimirRestricoes(List<int[]> igualdades, List<int[]> oposicoes) {
         if (igualdades.isEmpty() && oposicoes.isEmpty()) {
             System.out.println("(sem restrições = / x)");
             return;
         }
-        StringBuilder sb = new StringBuilder("Restrições: ");
-        for (int[] r : igualdades) {
-            sb.append("(").append(r[0]).append(",").append(r[1]).append(")=(")
-              .append(r[2]).append(",").append(r[3]).append(") | ");
+        System.out.println(linhaRestricoes("Igualdades (=): ", igualdades, '='));
+        System.out.println(linhaRestricoes("Oposições  (x): ", oposicoes, 'x'));
+    }
+
+    /** Monta uma linha com todas as restrições de um tipo; usa "(nenhuma)" se a lista estiver vazia. */
+    private static String linhaRestricoes(String titulo, List<int[]> restricoes, char sinal) {
+        if (restricoes.isEmpty()) return titulo + "(nenhuma)";
+        StringBuilder sb = new StringBuilder(titulo);
+        for (int i = 0; i < restricoes.size(); i++) {
+            int[] r = restricoes.get(i);
+            sb.append("(").append(r[0]).append(",").append(r[1]).append(")")
+              .append(sinal)
+              .append("(").append(r[2]).append(",").append(r[3]).append(")");
+            if (i < restricoes.size() - 1) sb.append(" | ");
         }
-        for (int[] r : oposicoes) {
-            sb.append("(").append(r[0]).append(",").append(r[1]).append(")x(")
-              .append(r[2]).append(",").append(r[3]).append(") | ");
-        }
-        System.out.println(sb.toString().trim());
+        return sb.toString();
     }
 
     public static void imprimir(int[][] t) {
